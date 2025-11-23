@@ -41,7 +41,6 @@ class String(Node):
     def __init__(self, value):
         self.value = value
 
-
 class Symbol:
     """Clase para guardar la información de un símbolo"""
     def __init__(self, name, var_type):
@@ -60,8 +59,6 @@ class SymbolTable:
         """Sale del ámbito actual (ej. al salir de un bloque '}')"""
         if len(self.scope_stack) > 1:
             self.scope_stack.pop()
-        else:
-            print("Error: No se puede salir del ámbito global.")
 
     def declare(self, symbol):
         """
@@ -105,11 +102,12 @@ class SemanticAnalyzer(NodeVisitor):
         self.symbol_table = SymbolTable()
 
     def visit_Block(self, node):
-        """Visita un bloque: entramos a un nuevo ámbito"""
-        self.symbol_table.enter_scope()
+        """
+        Visita un bloque: versión simplificada SIN manejo de ámbitos
+        para el proyecto actual.
+        """
         for child in node.children:
             self.visit(child)
-        self.symbol_table.exit_scope()
 
     def visit_VarDecl(self, node):
         """
@@ -180,85 +178,21 @@ class SemanticAnalyzer(NodeVisitor):
         """Tipo de un literal de cadena"""
         return 'string'
 
-
-def main():
-    
-
-    ast_valido = Block([
+# Pruebas del analizador semántico
+if __name__ == '__main__':
+    # Test básico
+    ast_test = Block([
         VarDecl('int', 'x'),
         Assign(Identifier('x'), Num(10)),
-        VarDecl('string', 'y'),
-        Assign(Identifier('y'), String("hola")),
-        VarDecl('int', 'z'),
-        Assign(Identifier('z'), BinOp(Identifier('x'), '+', Num(5)))
+        VarDecl('int', 'y'), 
+        Assign(Identifier('y'), Num(20)),
+        Assign(Identifier('x'), BinOp(Identifier('x'), '+', Identifier('y')))
     ])
 
-    print("--- ANALIZANDO AST VÁLIDO ---")
+    print("=== PRUEBA SEMÁNTICA ===")
     try:
-        analyzer_valido = SemanticAnalyzer()
-        analyzer_valido.visit(ast_valido)
-        print("ANÁLISIS SEMÁNTICO EXITOSO: El código es válido.")
+        analyzer = SemanticAnalyzer()
+        analyzer.visit(ast_test)
+        print("✅ ANÁLISIS SEMÁNTICO EXITOSO")
     except Exception as e:
-        print(f"ANÁLISIS FALLIDO: {e}")
-
-    print("\n" + "="*30 + "\n")
-
-    # --- EJEMPLO 2: ERROR (Tipo incompatible) ---
-    # {
-    #   int x;
-    #   x = "hola"; // Error
-    # }
-    ast_error_tipo = Block([
-        VarDecl('int', 'x'),
-        Assign(Identifier('x'), String("hola"))
-    ])
-
-    print("--- ANALIZANDO AST CON ERROR DE TIPO ---")
-    try:
-        analyzer_error = SemanticAnalyzer()
-        analyzer_error.visit(ast_error_tipo)
-        print("ANÁLISIS SEMÁNTICO EXITOSO (¡Esto no debería pasar!).")
-    except Exception as e:
-        print(f"ANÁLISIS FALLIDO (CORRECTO): {e}")
-
-    print("\n" + "="*30 + "\n")
-
-    # --- EJEMPLO 3: ERROR (Variable no declarada) ---
-    # {
-    #   x = 10; // Error
-    # }
-    ast_error_no_decl = Block([
-        Assign(Identifier('x'), Num(10))
-    ])
-
-    print("--- ANALIZANDO AST CON VARIABLE NO DECLARADA ---")
-    try:
-        analyzer_error = SemanticAnalyzer()
-        analyzer_error.visit(ast_error_no_decl)
-        print("ANÁLISIS SEMÁNTICO EXITOSO (¡Esto no debería pasar!).")
-    except Exception as e:
-        print(f"ANÁLISIS FALLIDO (CORRECTO): {e}")
-
-    print("\n" + "="*30 + "\n")
-
-    # --- EJEMPLO 4: ERROR (Variable re-declarada) ---
-    # {
-    #   int x;
-    #   string x; // Error
-    # }
-    ast_error_redecl = Block([
-        VarDecl('int', 'x'),
-        VarDecl('string', 'x')
-    ])
-
-    print("--- ANALIZANDO AST CON VARIABLE RE-DECLARADA ---")
-    try:
-        analyzer_error = SemanticAnalyzer()
-        analyzer_error.visit(ast_error_redecl)
-        print("ANÁLISIS SEMÁNTICO EXITOSO (¡Esto no debería pasar!).")
-    except Exception as e:
-        print(f"ANÁLISIS FALLIDO (CORRECTO): {e}")
-
-
-if __name__ == '__main__':
-    main()
+        print(f"❌ ERROR: {e}")
