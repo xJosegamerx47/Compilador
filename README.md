@@ -7,3 +7,8 @@ A complete compiler implementation for a mini imperative language, built for the
 - **Error Handling**: Detailed error reporting for lexical, syntactic, and semantic errors.
 - **Three-Address Code (TAC) Generation**: Translation of AST to TAC for a virtual machine.
 ## Project Structure
+Compilador/
+├── src/ # Source code
+│ ├── parser.py
+│ ├── analizador_semantico.py
+│ └── lexer.py
