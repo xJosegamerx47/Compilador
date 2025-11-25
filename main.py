@@ -27,9 +27,11 @@ try:
     def compilar_codigo_fuente(codigo_fuente):
         """Función principal de compilación"""
         print("=== INICIANDO COMPILACIÓN ===")
-        print("Código fuente:")
+        # Mostramos solo las primeras líneas para no saturar si el archivo es grande
+        print(f"Código fuente (tamaño: {len(codigo_fuente)} caracteres)")
+        print("-" * 20)
         print(codigo_fuente)
-        print("\n" + "="*50)
+        print("-" * 20 + "\n")
         
         try:
             # 1. ANÁLISIS LÉXICO
@@ -65,7 +67,10 @@ try:
                 print("✅ Ejecución completada")
                 print("   Variables finales:")
                 for variable, valor in resultado.items():
-                    print(f"   - {variable} = {valor}")
+                    # Solo ocultamos si parece temporal (ej: t1, t20)
+                    # Si es 'total', 'temperatura', etc., lo imprimimos.
+                    if "temp_" not in variable:
+                        print(f"   - {variable} = {valor}")
             else:
                 print("\n✅ COMPILACIÓN COMPLETADA (solo análisis)")
                 
@@ -73,24 +78,35 @@ try:
             
         except Exception as e:
             print(f"❌ Error durante la compilación: {e}")
+            # Importamos traceback solo si hay error para mostrar detalles
             import traceback
             traceback.print_exc()
             return False
     
-    # Código de prueba
+    # --- BLOQUE PRINCIPAL MODIFICADO ---
     if __name__ == "__main__":
-        codigo_ejemplo = """
-        var int x = 10;
-        var int y = 20;
-        x = x + y;
-        """
-        
-        compilar_codigo_fuente(codigo_ejemplo)
+        # Verificamos si se pasó un argumento (el nombre del archivo)
+        if len(sys.argv) > 1:
+            nombre_archivo = sys.argv[1]
+            
+            # Intentamos abrir y leer el archivo
+            try:
+                with open(nombre_archivo, 'r', encoding='utf-8') as archivo:
+                    contenido = archivo.read()
+                    print(f"📂 Leyendo archivo: {nombre_archivo}")
+                    compilar_codigo_fuente(contenido)
+            except FileNotFoundError:
+                print(f"❌ Error: El archivo '{nombre_archivo}' no existe.")
+            except Exception as e:
+                print(f"❌ Error al leer el archivo: {e}")
+        else:
+            print("❌ Error: Debes indicar el archivo a compilar.")
+            print("Uso correcto: python main.py <archivo.src>")
+            print("\nEjemplo: python main.py prueba.src")
 
 except ImportError as e:
-    print(f"❌ Error de importación: {e}")
+    print(f"❌ Error de importación crítico: {e}")
     print("\n📋 Asegúrate de tener estos archivos en la misma carpeta:")
     print("   - Analizador_lexico.py")
     print("   - parser.py") 
     print("   - analizador_semantico.py")
-    print("\n💡 Si tu archivo léxico se llama 'Analizador lexico.py', renómbralo a 'Analizador_lexico.py'")

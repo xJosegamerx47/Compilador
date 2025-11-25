@@ -6,19 +6,20 @@ import re
 TOKEN_TYPES = {
     # Las reglas con patrones más específicos (como palabras reservadas)
     # DEBEN ir primero para que tengan prioridad.
-    'PALABRA_RESERVADA': r'(if|else|while|var|fun)',
+    'PALABRA_RESERVADA': r'(if|else|while|var|fun|print)',
     
     # 'IDENTIFICADOR' va después de 'PALABRA_RESERVADA'
+    'STRING':            r'"[^"]*"',
     'IDENTIFICADOR':     r'[a-zA-Z_][a-zA-Z0-9_]*',
     
     'NUMERO_ENTERO':     r'\d+',
     
     # Operadores de comparación (los de 2 caracteres van primero)
+    'OP_LOGICO': r'&&',
     'COMPARADOR':        r'==|!=|<=|>=|<|>',
     
     'OPERADOR_ASIGN':    r'=',
     'OPERADOR_ARIT':     r'[+\-*/]',
-    
     # Delimitadores
     'PARENTESIS_IZQ':    r'\(',
     'PARENTESIS_DER':    r'\)',

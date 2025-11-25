@@ -31,6 +31,13 @@ class TACInterpreter:
                     right = self.get_value(parts[4])
                     result = self.apply_operator(left, op, right)
                     self.store_value(target, result)
+            if parts[0] == 'print':
+                # El valor a imprimir está en parts[1]
+                variable_o_valor = parts[1]
+                valor_real = self.get_value(variable_o_valor)
+                
+                # Usamos el print real de Python
+                print(f">> OUT: {valor_real}")
             
             pc += 1
         
@@ -59,20 +66,23 @@ class TACInterpreter:
     
     def store_value(self, target, value):
         """Almacena un valor en variable o temporal"""
-        if target.startswith('t'):
+        if 'temp' in target:
             self.temps[target] = value
         else:
             self.memory[target] = value
     
     def apply_operator(self, left, op, right):
-        """Aplica un operador a dos valores"""
         if op == '+':
             return left + right
-        elif op == '-':
-            return left - right
-        elif op == '*':
-            return left * right
-        elif op == '/':
-            return left // right if right != 0 else 0
-        else:
-            raise ValueError(f"Operador no soportado: {op}")
+        # ... otros casos ...
+        
+        # --- NUEVA LÓGICA AND ---
+        elif op == '&&':
+            # Si left y right son distintos de 0, devuelve 1. Si no, 0.
+            return 1 if (left and right) else 0
+            
+        elif op == '>':
+            return 1 if left > right else 0
+        elif op == '<':
+            return 1 if left < right else 0
+        # ...

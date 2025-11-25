@@ -1,0 +1,208 @@
+# === SECCIÓN 1: DECLARACIONES BÁSICAS ===
+var int contador_global = 0;
+var int max_iteraciones = 100;
+var string mensaje_bienvenida = "Compilador Funcionando Correctamente";
+var bool sistema_activo = true;
+var int resultado_final = 0;
+
+# === SECCIÓN 2: FUNCIONALIDAD MATEMÁTICA AVANZADA ===
+var int a = 15;
+var int b = 25;
+var int c = 10;
+var int d = 5;
+
+var int base = 20;
+var int altura = 30;
+var int area_rectangulo = base * altura;
+
+var int lado1 = 8;
+var int lado2 = 12;
+var int lado3 = 15;
+var int perimetro_triangulo = lado1 + lado2 + lado3;
+
+var int x = 5;
+var int y = 10;
+var int z = 3;
+var int expresion_compleja = (x + y) * z - (x * y) / z;
+
+# === SECCIÓN 3: CONTROL DE FLUJO ANIDADO ===
+
+var int intentos = 0;
+var int max_intentos = 3;
+var bool acceso_permitido = false;
+var string usuario = "admin";
+
+if (intentos < max_intentos) {
+    acceso_permitido = true;
+    contador_global = contador_global + 1;
+} else {
+    acceso_permitido = false;
+}
+
+var int nivel_usuario = 2;
+var string tipo_acceso = "basico";
+
+if (nivel_usuario == 1) {
+    tipo_acceso = "administrador";
+} else {
+    if (nivel_usuario == 2) {
+        tipo_acceso = "usuario_avanzado";
+    } else {
+        tipo_acceso = "usuario_basico";
+    }
+}
+
+# === SECCIÓN 4: SISTEMA DE CONTADORES ===
+
+var int i = 0;
+var int suma_total = 0;
+var int producto_acumulado = 1;
+
+if (i < 10) {
+    suma_total = suma_total + i;
+    producto_acumulado = producto_acumulado * (i + 1);
+    i = i + 1;
+}
+
+if (i < 10) {
+    suma_total = suma_total + i;
+    producto_acumulado = producto_acumulado * (i + 1);
+    i = i + 1;
+}
+
+# === SECCIÓN 5: MANEJO DE MÚLTIPLES VARIABLES ===
+
+var int coord_x1 = 0;
+var int coord_y1 = 0;
+var int coord_x2 = 100;
+var int coord_y2 = 100;
+
+var int delta_x = coord_x2 - coord_x1;
+var int delta_y = coord_y2 - coord_y1;
+var int distancia_cuadrada = delta_x * delta_x + delta_y * delta_y;
+
+# === SECCIÓN 6: OPERACIONES EN CADENA ===
+
+var int valor_inicial = 50;
+var int paso1 = valor_inicial * 2;
+var int paso2 = paso1 + 25;
+var int paso3 = paso2 / 5;
+var int paso4 = paso3 - 10;
+var int resultado_cadena = paso4 * 3;
+
+var int metros = 1000;
+var int centimetros = metros * 100;
+var int kilometros = metros / 1000;
+
+# === SECCIÓN 7: ESTRUCTURAS DE DECISIÓN COMPLEJAS ===
+
+var int puntuacion = 85;
+var string calificacion = "regular";
+var bool aprobado = false;
+
+if (puntuacion >= 90) {
+    calificacion = "excelente";
+    aprobado = true;
+} else {
+    if (puntuacion >= 75) {
+        calificacion = "bueno";
+        aprobado = true;
+    } else {
+        if (puntuacion >= 60) {
+            calificacion = "suficiente";
+            aprobado = true;
+        } else {
+            calificacion = "insuficiente";
+            aprobado = false;
+        }
+    }
+}
+
+# === SECCIÓN 8: CÁLCULOS GEOMÉTRICOS ===
+
+var int largo = 10;
+var int ancho = 5;
+var int alto = 3;
+var int volumen_caja = largo * ancho * alto;
+
+var int radio = 7;
+var int diametro = radio * 2;
+var int circunferencia_aproximada = radio * 6;
+
+# === SECCIÓN 9: SISTEMA DE ESTADÍSTICAS ===
+
+var int dato1 = 45;
+var int dato2 = 67;
+var int dato3 = 23;
+var int dato4 = 89;
+var int dato5 = 34;
+
+var int suma_datos = dato1 + dato2 + dato3 + dato4 + dato5;
+var int cantidad_datos = 5;
+var int promedio = suma_datos / cantidad_datos;
+
+var int maximo = dato1;
+var int minimo = dato1;
+
+if (dato2 > maximo) { maximo = dato2; }
+if (dato2 < minimo) { minimo = dato2; }
+
+if (dato3 > maximo) { maximo = dato3; }
+if (dato3 < minimo) { minimo = dato3; }
+
+if (dato4 > maximo) { maximo = dato4; }
+if (dato4 < minimo) { minimo = dato4; }
+
+if (dato5 > maximo) { maximo = dato5; }
+if (dato5 < minimo) { minimo = dato5; }
+
+var int rango = maximo - minimo;
+
+# === SECCIÓN 10: OPERACIONES FINALES Y RESULTADOS ===
+
+var int resultado_parcial1 = area_rectangulo + perimetro_triangulo;
+var int resultado_parcial2 = expresion_compleja * 2;
+var int resultado_parcial3 = volumen_caja - distancia_cuadrada;
+
+resultado_final = resultado_parcial1 + resultado_parcial2 + resultado_parcial3;
+resultado_final = resultado_final + suma_total;
+resultado_final = resultado_final + producto_acumulado;
+resultado_final = resultado_final + promedio;
+resultado_final = resultado_final + rango;
+
+# Ajuste final basado en condiciones
+if (aprobado && sistema_activo) {
+    resultado_final = resultado_final * 2;
+} else {
+    if (sistema_activo) {
+        resultado_final = resultado_final + 1000;
+    }
+}
+
+# === SECCIÓN 11: VERIFICACIONES FINALES ===
+
+var bool resultado_valido = false;
+if (resultado_final > 0) {
+    resultado_valido = true;
+}
+
+var string estado_final = "completado";
+if (resultado_valido) {
+    estado_final = "exitoso";
+} else {
+    estado_final = "fallido";
+}
+
+var int total_operaciones = 0;
+total_operaciones = total_operaciones + 1;
+total_operaciones = total_operaciones + 1;
+total_operaciones = total_operaciones + 1;
+total_operaciones = total_operaciones + 1;
+
+# === SECCIÓN 12: RESULTADO GLOBAL ===
+
+var int puntuacion_final_sistema = resultado_final + total_operaciones;
+var bool sistema_operativo = true;
+
+# La sentencia print debe ser válida
+print("Proceso de compilacion completado exitosamente");

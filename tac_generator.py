@@ -6,9 +6,9 @@ class TACGenerator:
         self.symbol_table = {}  # Tabla de símbolos para variables
         
     def new_temp(self):
-        """Genera un nuevo temporal"""
-        self.temp_count += 1
-        return f"t{self.temp_count}"
+      """Genera un nuevo temporal"""
+      self.temp_count += 1
+      return f"temp_{self.temp_count}"
     
     def new_label(self):
         """Genera una nueva etiqueta"""
@@ -73,3 +73,16 @@ class TACGenerator:
     
     def visit_String(self, node):
         return f'"{node.value}"'
+    def visit_Print(self, node):
+        # 1. Calculamos el valor de la expresión (esto genera temporales si es necesario)
+        val_temp = self.visit(node.expression)
+        
+        # 2. Emitimos la instrucción 'print'
+        self.emit(f"print {val_temp}")
+    def visit_IfStatement(self, node):
+        # Por ahora, solo visitas para que genere el código de las expresiones internas
+        self.visit(node.condition)
+        self.visit(node.then_block)
+        if node.else_block:
+            self.visit(node.else_block)
+        # Aquí iría la lógica compleja de generación de etiquetas L1, L2 y saltos.

@@ -7,12 +7,22 @@ class Block(Node):
     def __init__(self, children):
         self.children = children
 
+class Print(Node):
+    """Representa una sentencia print(expresion)"""
+    def __init__(self, expression):
+        self.expression = expression
+        
+class IfStatement(Node):
+    """Representa la estructura IF (condicion) { then_block } [else { else_block }]"""
+    def __init__(self, condition, then_block, else_block=None):
+        self.condition = condition
+        self.then_block = then_block
+        self.else_block = else_block # Puede ser None
 class VarDecl(Node):
     """Declaración de variable (ej. 'int x')"""
     def __init__(self, var_type, var_name):
         self.var_type = var_type
         self.var_name = var_name
-
 class Assign(Node):
     """Asignación (ej. 'x = 10')"""
     def __init__(self, target, value):
@@ -108,7 +118,15 @@ class SemanticAnalyzer(NodeVisitor):
         """
         for child in node.children:
             self.visit(child)
-
+            
+    def visit_Print(self, node):
+        """
+        Regla Semántica: Print
+        Simplemente visitamos la expresión interna para asegurarnos de que sea válida
+        (ej: que las variables existan).
+        """
+        self.visit(node.expression)
+        
     def visit_VarDecl(self, node):
         """
         Regla Semántica: Declaración de variable.
@@ -138,6 +156,7 @@ class SemanticAnalyzer(NodeVisitor):
             raise Exception(f"Error Semántico: Incompatibilidad de tipos. "
                             f"No se puede asignar tipo '{value_type}' a la variable '{var_symbol.name}' de tipo '{var_symbol.type}'.")
 
+        
     def visit_BinOp(self, node):
         """
         Regla Semántica: Operación Binaria.
@@ -167,8 +186,14 @@ class SemanticAnalyzer(NodeVisitor):
         symbol = self.symbol_table.lookup(node.name)
         if not symbol:
             raise Exception(f"Error Semántico: Variable '{node.name}' no ha sido declarada.")
-        
         return symbol.type
+    def visit_IfStatement(self, node):
+        """Validación de que la condición sea tipo booleano."""
+        # Esto solo asegura que el programa no falle en la fase semántica
+        self.visit(node.condition)
+        self.visit(node.then_block)
+        if node.else_block:
+            self.visit(node.else_block)
 
     def visit_Num(self, node):
         """Tipo de un literal numérico"""

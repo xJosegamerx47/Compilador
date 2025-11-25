@@ -135,7 +135,35 @@ class Parser:
     # SENTENCIAS
     # -----------------------------------------------------------
 
+    def parse_if(self):
+        # 1. Consumir 'if'
+        self.ts.expect('PALABRA_RESERVADA', 'if')
+
+        # 2. Consumir '('
+        self.ts.expect('PARENTESIS_IZQ', '(')
+        
+        # 3. Parsear la CONDICIÓN (ej. x > 5 && y < 10)
+        condition = self.parse_expr() 
+        
+        # 4. Consumir ')'
+        self.ts.expect('PARENTESIS_DER', ')')
+        
+        # 5. Parsear el BLOQUE 'THEN'
+        # Usamos parse_block que debe manejar las llaves {}
+        then_block = self.parse_block() 
+        
+        # 6. Manejar la parte ELSE (opcional)
+        else_block = None
+        if self.ts.peek()[0] == 'PALABRA_RESERVADA' and self.ts.peek()[1] == 'else':
+            self.ts.next() # Consumir 'else'
+            
+            # Parsear el BLOQUE 'ELSE'
+            else_block = self.parse_block() 
+            
+        return IfStatement(condition, then_block, else_block)
+    
     def parse_statement(self):
+        
         tipo, lex = self.ts.peek()
 
         # var tipo name = expr ;
@@ -145,8 +173,22 @@ class Parser:
         # assignment: IDENTIFICADOR = expr ;
         if tipo == 'IDENTIFICADOR':
             return self.parse_assign()
-
+        
+        if tipo == 'PALABRA_RESERVADA' and lex == 'print':
+            self.ts.next()  # Consumir 'print'
+            self.ts.expect('PARENTESIS_IZQ', '(')
+        # NUEVO: Manejo de IF
+        if tipo == 'PALABRA_RESERVADA' and lex == 'if':
+            return self.parse_if() # Llamar a la nueva función
+            
+            # Parseamos lo que hay adentro (puede ser variable, string o suma)
+            expr = self.parse_expr()
+            self.ts.expect('PARENTESIS_DER', ')')
+            self.ts.expect('PUNTO_Y_COMA', ';')
+            return Print(expr) # Retornamos el nuevo nodo
         raise Exception(f"Error sintáctico: sentencia no reconocida '{tipo}' '{lex}'")
+    
+
 
     def parse_var_decl(self):
         """
@@ -198,21 +240,60 @@ class Parser:
     # EXPRESIONES
     # -----------------------------------------------------------
 
+    # 1. Este es el nuevo nivel superior de expresión
     def parse_expr(self):
-        return self.parse_add()
+        return self.parse_logic_and()
 
-    def parse_add(self):
+    # 2. Nueva función para manejar el AND
+    def parse_logic_and(self):
+        # Primero intentamos parsear comparaciones (ej: x > 5)
+        node = self.parse_compare()
+        
+        while True:
+            t, lex = self.ts.peek()
+            if t == 'OP_LOGICO' and lex == '&&':
+                self.ts.next() # Consumir &&
+                right = self.parse_compare()
+                node = BinOp(node, '&&', right)
+            else:
+                break
+        return node
+
+    # 3. Tu función existente de comparaciones (asegúrate que llame a parse_add al final)
+    def parse_compare(self):
+        node = self.parse_add() # Llama a la aritmética (sumas/restas)
+        # ... lógica de > < >= <= ...
+        # (Aquí va tu lógica existente de comparadores)
+        return node
+    def parse_factor(self):
         """
-        expr -> term { '+' term }
+        factor -> term { ('*' | '/') term }
         """
         node = self.parse_term()
 
         while True:
             t, l = self.ts.peek()
-            if t == 'OPERADOR_ARIT' and l == '+':
+            if t == 'OPERADOR_ARIT' and (l == '*' or l == '/'):
                 self.ts.next()
                 right = self.parse_term()
-                node = BinOp(node, "+", right)
+                node = BinOp(node, l, right)
+            else:
+                break
+        return node
+    def parse_add(self):
+        """
+        expr -> factor { ('+' | '-') factor }
+        """
+        # Antes llamabas a parse_term, ahora llamas a parse_factor
+        node = self.parse_factor() 
+
+        while True:
+            t, l = self.ts.peek()
+            if t == 'OPERADOR_ARIT' and (l == '+' or l == '-'):
+                self.ts.next()
+                # Antes llamabas a parse_term, ahora llamas a parse_factor
+                right = self.parse_factor() 
+                node = BinOp(node, l, right)
             else:
                 break
 
@@ -227,6 +308,11 @@ class Parser:
         if t == 'NUMERO_ENTERO':
             self.ts.next()
             return Num(int(l))
+        if t == 'STRING':
+            self.ts.next()
+            # El lexema (l) ya incluye las comillas. 
+            # Guardamos el string completo.
+            return String(l) # Retorna un nodo String
 
         if t == 'IDENTIFICADOR':
             self.ts.next()
@@ -248,6 +334,7 @@ def parse_source(source_code):
     tokens = analizar(source_code)
     parser = Parser(tokens)
     return parser.parse()
+
 
 # ===============================================================
 # EJECUCIÓN DIRECTA (PRUEBAS)

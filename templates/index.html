@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mini-Compiler Web | Noel</title>
+    <style>
+      :root {
+        --bg-color: #1e1e1e;
+        --editor-bg: #252526;
+        --text-color: #d4d4d4;
+        --accent-color: #0e639c;
+        --border-color: #3e3e42;
+      }
+
+      body {
+        font-family: "Segoe UI", sans-serif;
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+      }
+
+      header {
+        padding: 15px;
+        background-color: #2d2d2d;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 1.2rem;
+      }
+
+      .container {
+        display: flex;
+        flex: 1;
+        overflow: hidden;
+      }
+
+      .panel {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding: 10px;
+        border-right: 1px solid var(--border-color);
+      }
+
+      .panel:last-child {
+        border-right: none;
+      }
+
+      .label {
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #9cdcfe;
+      }
+
+      textarea,
+      #output {
+        flex: 1;
+        background-color: var(--editor-bg);
+        color: var(--text-color);
+        border: 1px solid var(--border-color);
+        border-radius: 5px;
+        padding: 15px;
+        font-family: "Consolas", monospace;
+        font-size: 14px;
+        resize: none;
+        outline: none;
+      }
+
+      #output {
+        white-space: pre-wrap; /* Mantiene saltos de línea */
+        overflow-y: auto;
+      }
+
+      button {
+        background-color: var(--accent-color);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 1rem;
+        transition: background 0.2s;
+      }
+
+      button:hover {
+        background-color: #1177bb;
+      }
+
+      /* Colores para la salida */
+      .log-error {
+        color: #ff5555;
+      }
+      .log-success {
+        color: #50fa7b;
+      }
+      .log-info {
+        color: #8be9fd;
+      }
+      .log-tac {
+        color: #f1fa8c;
+      }
+      .log-print {
+        color: #ffffff;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>🚀 Mini-Compiler IDE Web</h1>
+      <button onclick="compileCode()">▶ EJECUTAR</button>
+    </header>
+
+    <div class="container">
+      <div class="panel">
+        <div class="label">📝 CÓDIGO FUENTE (.src)</div>
+        <textarea
+          id="sourceCode"
+          spellcheck="false"
+          placeholder="Escribe tu código aquí..."
+        >
+var int x = 10;
+var int y = 20;
+var int resultado = x + y;
+print(resultado);
+        </textarea>
+      </div>
+      <div class="panel">
+        <div class="label">💻 SALIDA DEL COMPILADOR</div>
+        <div id="output">Esperando ejecución...</div>
+      </div>
+    </div>
+
+    <script>
+      async function compileCode() {
+        const code = document.getElementById("sourceCode").value;
+        const outputDiv = document.getElementById("output");
+
+        outputDiv.innerHTML = "⏳ Compilando...";
+
+        try {
+          const response = await fetch("/compile", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code: code }),
+          });
+
+          const data = await response.json();
+
+          // Formatear colores (similar a tu UI de Python)
+          const formattedText = formatOutput(data.output);
+          outputDiv.innerHTML = formattedText;
+        } catch (error) {
+          outputDiv.innerHTML = `<span class="log-error">Error de conexión: ${error}</span>`;
+        }
+      }
+
+      function formatOutput(text) {
+        if (!text) return "";
+        return text
+          .split("\n")
+          .map((line) => {
+            if (line.includes("❌") || line.includes("Error"))
+              return `<div class="log-error">${line}</div>`;
+            if (line.includes("✅"))
+              return `<div class="log-success">${line}</div>`;
+            if (
+              line.includes("📝") ||
+              line.includes("📐") ||
+              line.includes("🎯")
+            )
+              return `<div class="log-info">${line}</div>`;
+            if (
+              line.includes("temp_") ||
+              (line.includes("=") && line.trim().startsWith("t"))
+            )
+              return `<div class="log-tac">${line}</div>`;
+            if (line.includes(">> OUT:"))
+              return `<div class="log-print">${line}</div>`;
+            return `<div>${line}</div>`;
+          })
+          .join("");
+      }
+    </script>
+  </body>
+</html>

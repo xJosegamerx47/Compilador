@@ -1,19 +1,15 @@
-# --- Archivo de prueba: prueba.src ---
-# Definimos dos variables enteras
+
 var int costo = 100;
 var int impuesto = 20;
-
-# Variable donde guardaremos el resultado
 var int total = 0;
 
 # 1. Prueba de asignación y suma simple
 # El interprete debería calcular 100 + 20 = 120
+
 total = costo + impuesto;
 
-# 2. Prueba de operaciones encadenadas
-# Esto es CRÍTICO: probará si tu Generador TAC crea temporales correctamente.
-# Lógica esperada:
-# t1 = total + 10
+# dato1 = total + 10
 # t2 = t1 + 5
-# total = t2
+#total = t2
+
 total = total + 10 + 5;
